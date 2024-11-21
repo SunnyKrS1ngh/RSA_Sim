@@ -17,21 +17,27 @@ def generate_prime_in_range(args):
         prime = random.randint(min_value, max_value)
     return prime
 
-def generate_keys_parallel(min_value=1000, max_value=50000):
-    with multiprocessing.Pool(processes=2) as pool:
-        p, q = pool.map(generate_prime_in_range, [(min_value, max_value)] * 2)
+def generate_keys_parallel(min_value=10, max_value=500):
+    with multiprocessing.Pool(processes=3) as pool:
+        p, q, r = pool.map(generate_prime_in_range, [(min_value, max_value)] * 3)
+        print(f"{p=}, {q=}, {r=}")
     
-    while p == q:
+    while len({p,q,r}) < 3:
         q = generate_prime_in_range((min_value, max_value))
+        r = generate_prime_in_range((min_value, max_value))
 
-    n = p * q
-    phi_n = (p - 1) * (q - 1)
+    n = p * q * r
+    print(f"{n=}")
+    phi_n = (p - 1) * (q - 1) * (r - 1)
+    print(f"{phi_n=}")
 
     e = random.randint(3, phi_n - 1)
+    print(f"{e=}")
     while math.gcd(e, phi_n) != 1:
         e = random.randint(3, phi_n - 1)
 
     d = mod_inverse(e, phi_n)
+    print(f"{d=}")
 
     return (e, n), (d, n)  # Public key, Private key
 
